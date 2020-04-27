@@ -3,6 +3,7 @@ joblib==0.14.1
 numpy==1.18.3
 onnx==1.6.0
 onnxconverter-common==1.6.1
+onnxruntime==1.2.0
 pandas==1.0.3
 protobuf==3.11.3
 python-dateutil==2.8.1
