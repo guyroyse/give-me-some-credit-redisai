@@ -4,7 +4,9 @@ This repository has all the code to build a machine learning model with scikit-l
 
 ## Step 1: Get Some Data
 
-I can't host the data here as it belongs to others. You will need to download it yourself, unzip it, and place the .csv files in the data folder. You can download it here from the Kaggle [challenge page](https://www.kaggle.com/c/GiveMeSomeCredit/data).
+I can't host the data here as it belongs to others. You will need to download it yourself, unzip it, and place the .csv file in the data folder. You can download it here from the Kaggle [challenge page](https://www.kaggle.com/c/GiveMeSomeCredit/data).
+
+**NOTE**: We will only use the `cs-training.csv` file and will not use the `cs-test.csv` file. So download only what you need.
 
 ## Step 2: Setup Python Environment
 
@@ -35,3 +37,12 @@ This project uses ONNX and ONNX uses protobuf. So, before you install the Python
 Now, you can install all the dependencies. These are all listed in `requirements.txt` and can be installed with `pip` like this.
 
     $ pip install -r requirements.txt
+
+
+## Step 4: Build the Model
+
+Run the Python script to build the model:
+
+   $ python build.py
+
+When completed, you will have a file in the model folder. This file can be loaded into RedisAI.

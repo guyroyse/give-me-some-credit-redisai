@@ -6,62 +6,115 @@ from sklearn.model_selection import cross_validate
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
 
-# import onnxruntime as rt
-# import numpy
+from skl2onnx import to_onnx
+from skl2onnx.common.data_types import FloatTensorType
+from skl2onnx.common.data_types import Int64TensorType
 
-# from skl2onnx import convert_sklearn
-# from skl2onnx.common.data_types import FloatTensorType
+import onnxruntime as rt
 
+TRAINING_DATA = 'data/cs-training.csv'
+MODEL_FILE = 'model/give-me-some-credit_linear-svc.onnx'
 
-# read in the CSV data
-df = pd.read_csv('data/cs-training.csv', encoding='utf-8')
+#########################################
+# Preparing the data
 
-# clean up the data a bit
-df = df.fillna(df.median())
-
-# extract the features
-X = df.iloc[:, [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]].values
-
-# extract the target
-y = df.iloc[:, 1].values
-
-# split out the test and train data
-X_train, X_test, y_train, y_test = train_test_split(X, y)
-
-# build a model
-print("Building this model. This may take a minute or two...")
-model = LinearSVC()
-model.fit(X_train, y_train)
-
-# make some predictions and report them
-y_pred = model.predict(X_test)
-print("Predictions")
-print(y_pred)
+print("Loading and preparing the data from", TRAINING_DATA)
 print()
 
-# evaluate
+# load from CSV
+df = pd.read_csv(TRAINING_DATA, encoding='utf-8')
+
+# replace missing data with an average
+df = df.fillna(df.median())
+
+# extract the features and the target
+df_features = df.iloc[:, 2:12]
+X = df_features.values
+
+print("Features")
+print("========")
+[print(feature_name) for feature_name in df_features.columns]
+print()
+
+df_target = df.iloc[:, 1]
+print("Target")
+print("======")
+print("SeriousDlqin2yrs")
+print()
+
+y = df_target.values
+
+# split out the train and test data (80/20)
+X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.80, test_size=0.20, random_state=0)
+
+#########################################
+# Building the model
+
+# build a model
+print("Building the model...")
+print()
+
+model = LinearSVC(dual=False, verbose=1)
+model.fit(X_train, y_train)
+print()
+print()
+
+#########################################
+# Evaluating the model
+
+# make some predictions
+y_pred = model.predict(X_test)
+
+# evaluate the predictions
 tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
 accuracy = accuracy_score(y_test, y_pred)
 
-print("True Negatives", tn)
-print("True Positives", tp)
-print("False Negatives", fn)
-print("False Positives", fp)
+# report the evaluations
+print("Evaluation")
+print("==========")
+print("True Negatives  :", tn)
+print("True Positives  :", tp)
+print("False Negatives :", fn)
+print("False Positives :", fp)
+print("Accuracy        :", accuracy)
 print()
-print("Accuracy", accuracy)
+
+#########################################
+# Saving the ONNX model
+
+print("Saving the model to", MODEL_FILE)
 print()
 
-# convert to model to ONNX
-# onx = convert_sklearn(model)
-# with open("linear_svc.onnx", "wb") as f:
-#   f.write(onx.SerializeToString())
+# save the model as ONNX
+onnx_model = to_onnx(model, X_train)
+with open(MODEL_FILE, "wb") as f:
+  f.write(onnx_model.SerializeToString())
 
-# # run and test the ONNX model
-# sess = rt.InferenceSession("logreg_iris.onnx")
-# input_name = sess.get_inputs()[0].name
-# label_name = sess.get_outputs()[0].name
-# pred_onx = sess.run([label_name], {input_name: X_test.astype(numpy.float32)})[0]
+#########################################
+# Evaluating the ONNX model
 
-# print("ONNX Predictions")
-# print(pred_onx)
-# print()
+# make some predictins
+session = rt.InferenceSession(MODEL_FILE)
+input_name = session.get_inputs()[0].name
+label_name = session.get_outputs()[0].name
+y_pred_onnx = session.run([label_name], {input_name: X_test})[0]
+
+# evaluate the predictions
+tn, fp, fn, tp = confusion_matrix(y_test, y_pred_onnx).ravel()
+accuracy = accuracy_score(y_test, y_pred_onnx)
+
+# report the evaluations
+print("ONNX Evaluation")
+print("===============")
+print("True Negatives  :", tn)
+print("True Positives  :", tp)
+print("False Negatives :", fn)
+print("False Positives :", fp)
+print("Accuracy        :", accuracy)
+print()
+
+#########################################
+# Print some samples to try
+
+
+

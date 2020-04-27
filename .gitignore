@@ -1,6 +1,6 @@
 .DS_Store
 .vscode
 venv
-
 data/*.csv
 data/*.zip
+model/*.onnx
