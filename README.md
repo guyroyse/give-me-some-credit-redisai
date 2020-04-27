@@ -43,7 +43,7 @@ Now, you can install all the dependencies. These are all listed in `requirements
 
 Run the Python script to build the model:
 
-   $ python build.py
+    $ python build.py
 
 When completed, you will have a file in the model folder. This file can be loaded into RedisAI. It will also output several examples from the training data that you can use to try out the model once you have deployed it to RedisAI.
 
