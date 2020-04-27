@@ -45,4 +45,14 @@ Run the Python script to build the model:
 
    $ python build.py
 
-When completed, you will have a file in the model folder. This file can be loaded into RedisAI.
+When completed, you will have a file in the model folder. This file can be loaded into RedisAI. It will also output several examples from the training data that you can use to try out the model once you have deployed it to RedisAI.
+
+## Step 5: Deploy the Model to RedisAI
+
+This is actually pretty easy assuming you have RedisAI configured with Redis already. Just enter the following command:
+
+    $ redis-cli -x AI.MODELSET models:gmsc:linearsvc ONNX CPU < model/give-me-some-credit_linear-svc.onnx
+
+## Step 6: Play Around
+
+This script takes the entire test dataset and generates Redis commands to set the tensors, run the model, and read the output tensors. These are in `samples.txt` and also include the original result in the test data, and the value predicted by the model. Look in there and play about.

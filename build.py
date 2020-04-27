@@ -14,12 +14,12 @@ import onnxruntime as rt
 
 TRAINING_DATA = 'data/cs-training.csv'
 MODEL_FILE = 'model/give-me-some-credit_linear-svc.onnx'
+SAMPLES_FOR_PLAY = 'samples.txt'
 
 #########################################
 # Preparing the data
 
 print("Loading and preparing the data from", TRAINING_DATA)
-print()
 
 # load from CSV
 df = pd.read_csv(TRAINING_DATA, encoding='utf-8')
@@ -41,17 +41,16 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.80, test_
 #########################################
 # Building the model
 
-# build a model
 print("Building the model...")
-print()
 
-model = LinearSVC(dual=False, verbose=1)
+# build a model
+model = LinearSVC(dual=False)
 model.fit(X_train, y_train)
-print()
-print()
 
 #########################################
 # Evaluating the model
+
+print("Evaluating the model...")
 
 # make some predictions
 y_pred = model.predict(X_test)
@@ -61,8 +60,9 @@ tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
 accuracy = accuracy_score(y_test, y_pred)
 
 # report the evaluations
-print("Evaluation")
-print("==========")
+print()
+print("scikit-learn Evaluation")
+print("=======================")
 print("True Negatives  :", tn)
 print("True Positives  :", tp)
 print("False Negatives :", fn)
@@ -74,7 +74,6 @@ print()
 # Saving the ONNX model
 
 print("Saving the model to", MODEL_FILE)
-print()
 
 # save the model as ONNX
 onnx_model = to_onnx(model, X_train)
@@ -95,6 +94,7 @@ tn, fp, fn, tp = confusion_matrix(y_test, y_pred_onnx).ravel()
 accuracy = accuracy_score(y_test, y_pred_onnx)
 
 # report the evaluations
+print()
 print("ONNX Evaluation")
 print("===============")
 print("True Negatives  :", tn)
@@ -105,12 +105,17 @@ print("Accuracy        :", accuracy)
 print()
 
 #########################################
-# Print some samples to try
+# Save the test data to try against RedisAI
 
-sample = df_features.sample(n=20, random_state=0)
+print("Saving all the test data and predictions to", SAMPLES_FOR_PLAY)
+print()
 
-for index, row in sample.iterrows():
-  print()
-  print(row)
-  print(f"(TARGET) SeriousDlqin2yrs\t\t\t{df_target[index]}")
-  print()
+output_file = open(SAMPLES_FOR_PLAY, 'w')
+
+for index, x in enumerate(X_test):
+  output_file.write(f"Test Data: {y_test[index]}\n")
+  output_file.write(f"Predicted: {y_pred[index]}\n")
+  output_file.write(f"AI.TENSORSET model:in DOUBLE 1 10 VALUES {x[0]} {x[1]} {x[2]} {x[3]} {x[4]} {x[5]} {x[6]} {x[7]} {x[8]} {x[9]}\n")
+  output_file.write("AI.MODELRUN models:gmsc:linearsvc INPUTS model:in OUTPUTS model:out:1 model:out:2\n")
+  output_file.write("AI.TENSORGET model:out:1 VALUES\n")
+  output_file.write("AI.TENSORGET model:out:2 VALUES\n\n\n")
