@@ -24,24 +24,15 @@ print()
 # load from CSV
 df = pd.read_csv(TRAINING_DATA, encoding='utf-8')
 
-# replace missing data with an average
-df = df.fillna(df.median())
+# clean up the data
+df = df.iloc[:, 1:12]        # remove useless first columns
+df = df.fillna(df.median())  # replace missing values with average
 
 # extract the features and the target
-df_features = df.iloc[:, 2:12]
+df_features = df.iloc[:, 1:11].astype(float)
+df_target = df.iloc[:, 0].astype(int)
+
 X = df_features.values
-
-print("Features")
-print("========")
-[print(feature_name) for feature_name in df_features.columns]
-print()
-
-df_target = df.iloc[:, 1]
-print("Target")
-print("======")
-print("SeriousDlqin2yrs")
-print()
-
 y = df_target.values
 
 # split out the train and test data (80/20)
@@ -116,5 +107,10 @@ print()
 #########################################
 # Print some samples to try
 
+sample = df_features.sample(n=20, random_state=0)
 
-
+for index, row in sample.iterrows():
+  print()
+  print(row)
+  print(f"(TARGET) SeriousDlqin2yrs\t\t\t{df_target[index]}")
+  print()
