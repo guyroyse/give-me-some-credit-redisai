@@ -30,7 +30,7 @@ If you want to deactivate this environment, you can do so from anywhere with the
 
 ## Step 3: Install Dependencies
 
-This project uses ONNX and ONNX uses protobuf. So, before you install the Python libraries, you'll need protobuf installed. I'm on a make and I use homebrew so for me this looks like this:
+This project uses ONNX and ONNX uses protobuf. So, before you install the Python libraries, you'll need protobuf installed. I'm on a Mac and I use homebrew so for me this looks like this:
 
     $ brew install protobuf
 
