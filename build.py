@@ -85,9 +85,16 @@ with open(MODEL_FILE, "wb") as f:
 
 # make some predictins
 session = rt.InferenceSession(MODEL_FILE)
-input_name = session.get_inputs()[0].name
-label_name = session.get_outputs()[0].name
-y_pred_onnx = session.run([label_name], {input_name: X_test})[0]
+inputs = session.get_inputs()
+outputs = session.get_outputs()
+
+input_name = inputs[0].name
+label_name = outputs[0].name
+prob_name = outputs[1].name
+
+y_onnx = session.run([label_name, prob_name], {input_name: X_test})
+y_pred_onnx = y_onnx[0]
+y_prob_onnx = y_onnx[1]
 
 # evaluate the predictions
 tn, fp, fn, tp = confusion_matrix(y_test, y_pred_onnx).ravel()
@@ -113,8 +120,9 @@ print()
 output_file = open(SAMPLES_FOR_PLAY, 'w')
 
 for index, x in enumerate(X_test):
-  output_file.write(f"Test Data: {y_test[index]}\n")
-  output_file.write(f"Predicted: {y_pred[index]}\n")
+  output_file.write(f"Test Data:        {y_test[index]}\n")
+  output_file.write(f"Predicted:        {y_pred[index]}\n")
+  output_file.write(f"Confidence Score: {y_prob_onnx[index][0]}\n")
   output_file.write(f"AI.TENSORSET model:in DOUBLE 1 10 VALUES {x[0]} {x[1]} {x[2]} {x[3]} {x[4]} {x[5]} {x[6]} {x[7]} {x[8]} {x[9]}\n")
   output_file.write("AI.MODELRUN models:gmsc:linearsvc INPUTS model:in OUTPUTS model:out:1 model:out:2\n")
   output_file.write("AI.TENSORGET model:out:1 VALUES\n")
