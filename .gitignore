@@ -5,3 +5,5 @@ samples.txt
 data/*.csv
 data/*.zip
 model/*.onnx
+redis/*.rdb
+redis/*.aof

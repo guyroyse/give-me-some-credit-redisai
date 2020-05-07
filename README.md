@@ -51,7 +51,7 @@ When completed, you will have a file in the model folder. This file can be loade
 
 This is actually pretty easy assuming you have RedisAI configured with Redis already. Just enter the following command:
 
-    $ redis-cli -x AI.MODELSET models:gmsc:linearsvc ONNX CPU < model/give-me-some-credit_linear-svc.onnx
+    $ redis-cli -x AI.MODELSET models:gmsc:linearsvc ONNX CPU BLOB < model/give-me-some-credit_linear-svc.onnx
 
 ## Step 6: Play Around
 
