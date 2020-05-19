@@ -5,5 +5,6 @@ samples.txt
 data/*.csv
 data/*.zip
 model/*.onnx
+model/*.pickle
 redis/*.rdb
 redis/*.aof
