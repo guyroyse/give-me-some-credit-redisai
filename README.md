@@ -38,7 +38,6 @@ Now, you can install all the dependencies. These are all listed in `requirements
 
     $ pip install -r requirements.txt
 
-
 ## Step 4: Build the scikit-learn Model
 
 Run the Python script to build the model:
