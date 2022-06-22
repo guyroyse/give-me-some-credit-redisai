@@ -1,6 +1,6 @@
 certifi==2020.4.5.1
 joblib==0.14.1
-numpy==1.18.3
+numpy==1.22.0
 onnx==1.6.0
 onnxconverter-common==1.6.1
 onnxruntime==1.2.0
